@@ -1,0 +1,8 @@
+
+VITE_API_URL='http://192.168.0.125:8080/'
+VITE_FESP_URL='http://192.168.0.24/FESP-REFACTOR/FespMVC/index.php'
+VITE_FESP_REQ='http://192.168.0.24/FESP-REFACTOR/index.php'
+VITE_BASE_ROOT='http://192.168.0.125/ecs/'
+VITE_BASE_URL='http://192.168.0.125/ecs/frontend/dist/'
+VITE_DIR_PATH='/var/www/html/ecs/'
+VITE_ASSET_PATH='/mnt/deepthought/FESP-REFACTOR/FespMVC/ECS/'

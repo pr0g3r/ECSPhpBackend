@@ -1,0 +1,139 @@
+* Elixir Customer Services
+
+* TODO Add ability to scan order barcodes and mark them as out of stock
+DEADLINE:   [2022-02-03 Thu 08:04] SCHEDULED:  [2022-02-03 Thu 08:04]
+:PROPERTIES:
+:CREATED:    [2022-02-03 Thu 08:04]
+:ID:         c77302bd-819e-45dc-9136-bf53963df293
+:END:
+:NOTES:
+Add a barcode scan box at the bottom of the out of stock container on the home page.
+
+* TODO Replace images on forms with categorized images
+Group images into misc, dor, delivery.
+DEADLINE:   [2022-02-16 Wed 09:41] SCHEDULED:  [2022-02-16 Wed 09:41]
+:PROPERTIES:
+:CREATED:    [2022-02-16 Wed 09:41]
+:ID:         6f16d8cf-9eb9-4c3d-9c70-d5913b72d2ec
+:END:
+
+* TODO Preset the category in the form
++ Anything that is not salt is home
++ Anything from salt is health
+DEADLINE:   [2022-02-16 Wed 09:51] SCHEDULED:  [2022-02-16 Wed 09:51]
+:PROPERTIES:
+:CREATED:    [2022-02-16 Wed 09:51]
+:ID:         4b075821-0999-46df-b6a8-5c3448170f18
+:END:
+
+
+** Issues
++ The graph labels are bugged, regardless of how many precision points your data is, it will decide on its own which to use.
+
+** Plan
+
++ Scan orders into out of stock table and then provide an additional page to all the users to remove them, ability to remove once it is back in stock.
+
++ Finish approve function to create pending orders in fesp and move the record from the pending table to the resend table
+
++ If room is salts/ferts add the ability to select a sealer
+
++ Add table containing all valid options
+
++ Create joining table that provides order type reason/option key pairs
+
++ Move forms over to the new format
+
++ Finish login page
+
++ Create function to check that a user has a valid id each time they load a page
+
++ Record which users perform which actions by passing the id stored in local storage to the backend
+
+* Csv Claims Form
+Cant be courier agnostic
+
+Check these conditions on creation of Resend or Refund.
+
++ Lost In Transit
++ Damaged In Transit
++ Arrived Damaged (Requires Photo)
++ Delivered Not Received (Requires DOR, New Option)
+
+** Claims max out at 25 per claim
++ We want to try maximise our returns so an example would be 10 claims, the max return would be 250, if we are at 200, we need to distribute 50 between all the claims so we can get as close to the 250 limit, this can work in the reverse where we are over the claim limit of 25 for a claim, we can then collect the remainder for all over limit claims and distribute it between the other claims in the forms.
+
+** Record Responses From Courier
++ Mark the each claim as complete or rejected, users will then need to manually go through the claims and accept of challenge the rejection.
+
+  Adding the records to the claims tables on creation means we have to monitor the changes that could invalidate them for claims or the reverse where the user updates the reason to a valid claim option. This would result in missed claims, querying the tables on request seems to be the most dynamic approach.
+
+** Approach
++ User provides to conditions they want to claim against
+  
++ Filter the resends and refunds table using the conditions, filtering out any records that are currently in the claims tables for both types of orders.
+  
++ Display the results on the claims page, separated by order type.
+  
++ Present user with the option to open all the current records in a claims form where they can edit the information that cant be preset.
+  
++ Once a form is opened it will not be saved until the user either submits the form of the chooses to save it to be submitted later.
+  
++ Once a claim belongs to a form it will no longer be collected by the claims search page.
+  
++ The forms will be marked with a status to indicate if they have been submitted are pending or completed.
+
++ Once a form is submitted it will be marked as in-progress, once a response is retrieved from the courier and a user uploads it to the claims page, the response will be processed and the form will be marked as complete. On submission we will need to collect a set of images depending on the type of form.
+
++ The response form will mark the individual orders with a status challenged and accepted.
+
++ Challenged claims will be show on the claims page in a separate table, a user will review them and decide to approve the couriers rejection.
+
++ The user will then be able to create a form of challenged claims that they can also submit to the courier. Again the responses will be recorded and we can again choose to challenged or accept the claims status.
+
++ On the mains claims view we will keep an archive of forms so we can use them as reference in the future.
+
+* Pending Courier Returns
+
+NOTE: Doesnt require too much work to implement into the new system
+
+Adds an additional option (Courier returned) to the Resend Reason drop-down (Resends form) and the Refunds Reason drop-down (Refunds form).
+
+The above get displayed in a new Pending Courier Returns view (nothing to do with the existing Returns).
+
+Like the Pending Resends view, the Pending Courier Returns view will have process buttons, but 4 in total:
+1. Returned
+2. Lost
+3. Delivered
+4. Damaged
+
+Option 1 will display the Returns form, but these will get added to a new courier_returns table.
+
+Option 2 adds them to a new table 'lost'. These will be included in the Hermes CSV table.
+
+Option 3 & 4 adds them to a new table 'delivered_damaged'. The damaged records appear in a new 'damages' Hermes CSV table.
+
+Notes:
+All the above could be saved in 1 table with the following fields:
+1. Tracking ID
+2. Order ID
+3. Outcome (1 of the above 4)
+4. Source (refund or resend)
+
+┌─────────────────────┬──────────────────┬─────────┬────────┐
+│       orderID       │    trackingID    │ outcome │ source │
+├─────────────────────┼──────────────────┼─────────┼────────┤
+│ 026-0385233-9481146 │ H00GGA0007297666 │       1 │      1 │
+└─────────────────────┴──────────────────┴─────────┴────────┘
+
+┌────────────────┬──────────┬───────────┐
+│ outcome_source │ optionID │  option   │
+├────────────────┼──────────┼───────────┤
+│ o              │        1 │ Returned  │
+│ o              │        2 │ Lost      │
+│ o              │        3 │ Delivered │
+│ o              │        4 │ Damaged   │
+│ s              │        1 │ refund    │
+│ s              │        2 │ resend    │
+└────────────────┴──────────┴───────────┘
+

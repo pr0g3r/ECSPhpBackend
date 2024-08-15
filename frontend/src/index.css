@@ -1,0 +1,26 @@
+.ModalBtns {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  column-gap: 10%;
+}
+
+:root {
+    /* --el-color-white: #f8f8f8 !important; */
+}
+
+.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+    background: #f0f8ff !important;
+}
+
+
+.el-table .pending-row {
+  --el-table-tr-bg-color: #f5faff;
+}
+ 
+.el-table .dispute-row {
+  --el-table-tr-bg-color: #fdf6ec;
+}
+.el-table .complete-row {
+  --el-table-tr-bg-color: #f0f9eb;
+}

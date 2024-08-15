@@ -1,0 +1,140 @@
+* Elixir Customer Services
+Customer services tool to replace the triple r system. The system aims to expand on the original funcitonality of the triple r and implement it in vue.
+
+** Databases
+
+*** Customer Services Database (customer_services.db3)
+This database contains orders of types refunds, resends and returns, the structure of these tables can be seen below.
+
+**** Order
+Contains all constant order data for the records within the tripleR system, types of order have a one to one dependency on order_id.
+
+
+| column      | types        | constraints        |
+|-------------+--------------+--------------------|
+| order_id    | VARCHAR(50)  | PRIMARY KEY        |
+| source      | INT          | REFERENCES Source  |
+| courier     | INT          | REFERENCES Courier |
+| tracking_id | VARCHAR(50)  |                    |
+| date        | DATE         |                    |
+| name        | VARCHAR(100) |                    |
+| contact     | VARCHAR(100) |                    |
+
+**** Refund
+Type of order which contains no constant and unique fields specific to a refund record. Dependent on Order via a one to one relation on order_id, meaning only one record of each order_id in the Order table can exist within this table. Records processed date and user when the order is marked as complete.
+
+| column      | types        | constraints          |
+|-------------+--------------+----------------------|
+| order       | VARCHAR      | REFERENCES Order     |
+| created     | DATE         |                      |
+| reason      | INT          | REFERENCES Reason    |
+| notes       | VARCHAR(255) |                      |
+| full_refund | BOOL         |                      |
+| amount      | FLOAT        |                      |
+| void        | BOOL         |                      |
+| dor         | BOOL         |                      |
+| processed   | DATE         | NULL                 |
+| user        | INT          | REFERENCES User NULL |
+
+**** Resend
+Type of order which contains no constant and unique fields specific to a resend record. Dependent on Order via a one to one relation on order_id, meaning only one record of each order_id in the Order table can exist within this table.
+
+| column    | types        | constraints          |
+|-----------+--------------+----------------------|
+| order     | VARCHAR      | REFERENCES Order     |
+| created   | DATE         |                      |
+| reason    | INT          | REFERENCES Reason    |
+| notes     | VARCHAR(255) |                      |
+| picked    | VARCHAR(10)  |                      |
+| packed    | VARCHAR(10)  |                      |
+| dor       | BOOL         |                      |
+| processed | DATE         | NULL                 |
+| user      | INT          | REFERENCES User NULL |
+
+**** Return
+Type of order which contains no constant and unique fields specific to a return record. Dependent on Order via a one to one relation on order_id, meaning only one record of each order_id in the Order table can exist within this table.
+
+| column          | types        | constraints                |
+|-----------------+--------------+----------------------------|
+| order           | VARCHAR      | REFERENCES Order           |
+| created         | DATE         |                            |
+| notes           | VARCHAR(255) |                            |
+| reason_option   | INT          | REFERENCES Reason_Option   |
+| action_customer | INT          | REFERENCES Action_Customer |
+| action_product  | INT          | REFERENCES Action_Product  |
+| processed       | DATE         | NULL                       |
+| user            | INT          | REFERENCES User NULL       |
+
+**** Reason
+Lookup for reason categories
+
+| column    | types        | constraints |
+|-----------+--------------+-------------|
+| reason_id | INT          | PRIMARY KEY |
+| name      | VARCHAR(255) |             |
+
+**** Option
+Lookup for options for an order
+
+| column    | types        | constraints |
+|-----------+--------------+-------------|
+| option_id | INT          | PRIMARY KEY |
+| name      | VARCHAR(255) |             |
+
+**** Reason_Option
+Key pair of Reason and Option which defines which Options are valid for which Reason (used primarily for return orders, can be used for other types if required in the future)
+
+| column | types | constraints       |
+|--------+-------+-------------------|
+| reason | INT   | REFERENCES Reason |
+| option | INT   | REFERENCES Option |
+
+
+**** Action_Customer
+Lookup for Action types
+
+| column    | types        | constraints |
+|-----------+--------------+-------------|
+| action_id | INT          | PRIMARY KEY |
+| name      | VARCHAR(100) |             |
+
+**** Action_Product
+Lookup for Action types
+
+| column    | types        | constraints |
+|-----------+--------------+-------------|
+| action_id | INT          | PRIMARY KEY |
+| name      | VARCHAR(100) |             |
+
+
+**** Courier
+Table of valid Couriers in our system
+
+| column | types        | constraints |
+|--------+--------------+-------------|
+| id     | INT          | PRIMARY KEY |
+| name   | VARCHAR(100) |             |
+
+**** Courier_Refund
+Record refund orders that require further interaction from the courier (this will be expanded on as we get to this stage)
+
+| column  | types        | constraints        |
+|---------+--------------+--------------------|
+| order   | VARCHAR(100) | REFERENCES Order   |
+| courier | VARCHAR(100) | REFERENCES Courier |
+| csv     | INT          | REFERENCES Csv     |
+
+**** Courier_Resend
+Record resend orders that require further interaction from the courier (this will be expanded on as we get to this stage)
+
+| column  | types        | constraints        |
+|---------+--------------+--------------------|
+| order   | VARCHAR(100) | REFERENCES Order   |
+| courier | VARCHAR(100) | REFERENCES Courier |
+| csv     | INT          | REFERENCES Csv     |
+
+**** User tables will be handled via djangos built in authentification module
+
+*** User Accounts
+
+Django has built in support for user accounts we can use to records which user authorizes the processing of each order
