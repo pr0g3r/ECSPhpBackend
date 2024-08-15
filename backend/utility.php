@@ -48,9 +48,7 @@ function encodeJwt($payload) {
 function uriMatch($uri, $uri_segments){
     $uri = explode('/', $uri);
 
-    debugToLog([$uri, $uri_segments]);
     foreach ($uri as $i => $segment) {
-        if($i === 0){ continue; }
         if($segment !== $uri_segments[$i]){
             return false;
         }

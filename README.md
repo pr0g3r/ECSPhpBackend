@@ -38,3 +38,4 @@ npm run build && npm run dev
 
 ## Daily notes
 + Removed JWT parsing from auth.js, backend sends user id through token.
++ Need to extract user data like ID's from django and recreate in php
